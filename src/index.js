@@ -3,19 +3,18 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/styles.css';
 import he from 'he';
+import QuestionService from "./questions-service.js";
+
 
 $("#popCards").click(() => {
   $(".answer").hide();
-  let request = new XMLHttpRequest();
-  const url = "https://opentdb.com/api.php?amount=16&type=boolean";
-  request.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      getQuestions(response);
-    }
-  };
-  request.open("GET", url, true);
-  request.send();  
+  let promise = QuestionService.provideQuestions();
+  promise.then(function(response) {
+    const output = JSON.parse(response);
+    getQuestions(output);
+  }, function() {
+    $(".card").text("WRONGGGGG!");
+  });
 });
 
 function getQuestions(response) {
